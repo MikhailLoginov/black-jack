@@ -1,0 +1,91 @@
+<meta charset="utf-8">
+
+<script>
+	
+	var cards = ["6", "7", "8", "9", "10", "J", "Q", "K", "A"];
+	
+	//Функция позволяет игроку взять случайную карту
+	function getCard() {
+		return cards[Math.floor(Math.random()*cards.length)];
+	}
+
+	//Функция возвращает количество очков в массиве arr
+	function scoreCounter(arr) {
+
+		//Кол-во очков
+		var score = 0;
+
+		//Кол-во тузов
+		var aCounter = 0;
+
+		//Обрабатываем все карты, кроме тузов
+		for (var i = 0; i < arr.length; i++) {
+			if (arr[i] == "A") {
+				aCounter++;
+			} else if ((arr[i] == "J") || (arr[i] == "Q") || (arr[i] == "K")) {
+				score += 10;
+			} else {
+				score += +(arr[i]);
+			}
+		}
+
+		//Отдельно обсчитываем тузов, тк они могут принимать значения 1 или 11
+		while (aCounter>0) {
+			if (score <= (9 + aCounter)) {
+				score += 11;
+			} else {
+				score++;
+			}
+			aCounter--;
+		}
+
+		return score;
+	}
+
+	//Благодаря этому циклу можно играть много раз
+	do {
+		var dealerCards = [];
+		var playerCards = [];
+		alert("Новая раздача!");
+		dealerCards.push(getCard());
+		playerCards.push(getCard());
+
+		//Берем карты, сколько хотим. Но только до того момента, пока у нас на руках 20 очков или меньше
+	    do {
+			playerCards.push(getCard());
+		} while ((scoreCounter(playerCards) <= 20) && (confirm("У дилера " + dealerCards.join(" ") + "\nУ вас " + playerCards.join(" ") + "\nБерём еще одну карту?")));
+
+		var playerScore = scoreCounter(playerCards);
+		
+		//В случае перебора у игрока, считать дальше смысла нет. Если перебора нет - считаем дальше
+		if (playerScore > 21) {
+			alert("У дилера " + scoreCounter(dealerCards) + " очков \nУ вас " + playerScore + " очков \nПеребор. Вы проиграли :(");
+		} else {
+			if (playerScore == 21) {
+			alert("У дилера " + dealerCards.join(" ") + "\nУ вас " + playerCards.join(" ") + "\nУ вас Black Jack! Но у дилера есть его ход!")
+		}
+			//Играет диллер. Поведение диллера УПРОЩЕННОЕ! можно ДОДЕЛАТЬ, 
+			//чтобы он не брал карты, если итак выигрывает. Или чтобы он рисковал и брал, если проигрывает!
+			while (scoreCounter(dealerCards)<17) {
+				dealerCards.push(getCard());
+			}
+			alert("Дилер взял карты. Теперь у него " + dealerCards.join(" "));
+
+			//Проверяем, кто выиграл
+			var dealerScore = scoreCounter(dealerCards);
+			if (dealerScore == 21) {
+				alert("У дилера " + dealerScore + " очков \nУ вас " + playerScore + " очков \nBlack Jack у дилера, вы проиграли :(");
+			} else if (playerScore == 21) {
+				alert("У дилера " + dealerScore + " очков \nУ вас " + playerScore + " очков \nBlack Jack! Вы победили!"); 
+			} else if (dealerScore > 21) {
+				alert("У дилера " + dealerScore + " очков \nУ вас " + playerScore + " очков \nУ дилера перебор. Вы победили!");
+			} else if (playerScore > dealerScore) {
+				alert("У дилера " + dealerScore + " очков \nУ вас " + playerScore + " очков \nПоздравляем, Вы победили!");
+			} else {
+				alert("У дилера " + dealerScore + " очков \nУ вас " + playerScore + " очков \nВы проиграли :(")
+			}
+		}
+
+	} while (confirm("Играем снова?"));
+
+</script>
